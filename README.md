@@ -1,4 +1,7 @@
 # Getting Started with Create React App
+<li>Register Form</li>
+<li>Welcome Man</li>
+<li>Registeation with menten all rules</li>
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
