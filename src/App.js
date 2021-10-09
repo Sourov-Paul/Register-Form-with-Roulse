@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './App.css';
-import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth,sendEmailVerification,sendPasswordResetEmail ,createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
 import initilizeAuthentication from './Firbase/firebaseinit';
 
 initilizeAuthentication()
@@ -98,18 +98,34 @@ const processLogin=(email,password)=>{
   })
 
 }
+// sucess reg user=========
 const registerNewUser=(email,password)=>{
   createUserWithEmailAndPassword (auth,email,password)
   .then(result=>{
     const personInfo=result.user;
     console.log(personInfo)
     setError('Regegtation Submited')
+    // verify email sent
+    varifyEmail()
   })
   .catch(error=>{
     setError(error.massage)
   })
 }
-
+const varifyEmail=()=>{
+  sendEmailVerification(auth.currentUser)
+  .then(result=>{
+    console.log(result)
+  })
+}
+// Reset Password===========
+const handleResetPassword=()=>{
+  sendPasswordResetEmail(auth, email)
+  .then(()=>{})
+  .catch(error=>{
+    setError(error.massage)
+  })
+}
 
   return (
     <div >
@@ -141,7 +157,8 @@ const registerNewUser=(email,password)=>{
       </div>
     </div>
   </div>
-  <button  type="submit" className="btn btn-primary">{isLogin ? "Log In":"Register"} </button>
+  <button  type="submit" className="btn btn-primary btn-sm">{isLogin ? "Log In":"Register"} </button>
+  <button  type="submit" onClick={handleResetPassword} className="btn btn-secondary btn-sm mx-4">Reset Password</button>
   {/* <button onClick={handleGoogleSignIn} type="submit" className="btn btn-primary">Sign in</button> */}
 </form>
     </div>
