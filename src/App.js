@@ -1,6 +1,6 @@
-import { getAuth,createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from 'react';
 import './App.css';
+import { getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword } from "firebase/auth";
 import initilizeAuthentication from './Firbase/firebaseinit';
 
 initilizeAuthentication()
@@ -18,6 +18,10 @@ const[password,setPassword]=useState('')
 // Error Strate=======
 const[error,setError]=useState('');
 
+// Already An Account toggleLogin
+const [isLogin,setIsLogin]=useState(false)
+
+
 const auth=getAuth();
 
 // const handleGoogleSignIn=()=>{
@@ -28,6 +32,12 @@ const auth=getAuth();
 //   })
 // }
 
+
+// Already An Account toggleLogin
+
+const toggleLogin= e =>{
+  setIsLogin(e.target.checked)
+}
 
 // Email==
 
@@ -63,24 +73,48 @@ if (!/(?=.*[!@#$&])/.test(password)){
   return
 }
 
-  createUserWithEmailAndPassword (auth,email,password)
+  // isLogin? processLogin(email,password): createNewUser(email,password);
+// Extra solution with if
+
+if(isLogin){
+   processLogin(email,password);
+  }
+  else{
+    registerNewUser(email,password);
+  }
+
+ 
+}
+  
+const processLogin=(email,password)=>{
+  signInWithEmailAndPassword(auth,email,password)
   .then(result=>{
-    const personInfo=result.user;
-    console.log(personInfo)
-    setError('')
+    const user=result.user;
+    console.log(user);
+    setError("")
   })
   .catch(error=>{
     setError(error.massage)
   })
 
 }
-
+const registerNewUser=(email,password)=>{
+  createUserWithEmailAndPassword (auth,email,password)
+  .then(result=>{
+    const personInfo=result.user;
+    console.log(personInfo)
+    setError('Regegtation Submited')
+  })
+  .catch(error=>{
+    setError(error.massage)
+  })
+}
 
 
   return (
     <div >
     <form className="mx-5 mt-5" onSubmit={handelRegidtraction}>
-      <h2 className="text-center text-primary mb-4">Please Register</h2>
+      <h2 className="text-center text-primary mb-4">Please {isLogin ? "Login":"Register"} </h2>
   <div className="row mb-3">
     <label htmlFor="inputEmail3" className="col-sm-2 col-form-label">Email</label>
     <div className="col-sm-10">
@@ -99,13 +133,15 @@ if (!/(?=.*[!@#$&])/.test(password)){
   <div className="row mb-3">
     <div className="col-sm-10 offset-sm-2">
       <div className="form-check">
-        {/* <input  className="form-check-input" type="checkbox" id="gridCheck1"/> */}
+        <label htmlFor="gridCheck1"> Already Have an Account </label>
+        <input onChange={toggleLogin}  className="form-check-input" type="checkbox" id="gridCheck1"/>
+
         <span className="form-check-label" htmlFor="gridCheck1">
      {error}    </span>
       </div>
     </div>
   </div>
-  <button  type="submit" className="btn btn-primary">Register </button>
+  <button  type="submit" className="btn btn-primary">{isLogin ? "Log In":"Register"} </button>
   {/* <button onClick={handleGoogleSignIn} type="submit" className="btn btn-primary">Sign in</button> */}
 </form>
     </div>
